@@ -1,0 +1,9 @@
+{
+  "items": [
+    { "image": "assets/congregation-gym.jpg",    "caption": "Humble beginnings",  "alt": "The From the Heart congregation in the early years" },
+    { "image": "assets/cookout.jpg",             "caption": "Church cookout",     "alt": "Serving food at the church cookout" },
+    { "image": "assets/bowling.jpg",             "caption": "Bowling",            "alt": "Church family bowling outing" },
+    { "image": "assets/worship-standing.jpg",    "caption": "Sunday morning",     "alt": "Sunday morning worship" },
+    { "image": "assets/praise-in-the-park.jpg",  "caption": "Praise in the Park", "alt": "Praise in the Park" }
+  ]
+}

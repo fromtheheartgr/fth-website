@@ -1,0 +1,210 @@
+# From the Heart - website editor settings
+#
+# The repo and branch below are filled in automatically at build time from the
+# host (Netlify tells the build which repository it came from), so there is
+# nothing to edit here if the repository is ever renamed, moved, or handed over.
+# The values written here are only used when building on your own computer.
+
+backend:
+  name: github
+  repo: fromtheheartgr/fth-website
+  branch: main
+
+media_folder: src/assets
+public_folder: assets
+
+site_url: https://fromtheheartgr.com
+display_url: https://fromtheheartgr.com
+logo_url: /assets/logo-3d-sm.png
+
+collections:
+  # ---------------------------------------------------------------- events
+  - name: events
+    label: Upcoming events
+    files:
+      - name: events
+        label: Upcoming events
+        file: content/events.json
+        description: >-
+          Add anything coming up. Once an event's date has passed it disappears
+          from the website on its own, so there is nothing to tidy up afterwards.
+        fields:
+          - name: items
+            label: Events
+            label_singular: event
+            widget: list
+            summary: "{{fields.date}} - {{fields.title}}"
+            fields:
+              - { name: date,  label: Date, widget: datetime, format: YYYY-MM-DD, date_format: YYYY-MM-DD, time_format: false, picker_utc: false }
+              - { name: title, label: What is it called, widget: string }
+              - { name: time,  label: Time, widget: string, hint: "For example 10:30 AM" }
+              - { name: place, label: Where, widget: string, default: Suite 618 }
+              - { name: note,  label: A sentence about it, widget: text, required: false }
+
+  # --------------------------------------------------------------- gallery
+  - name: gallery
+    label: Church family photos
+    files:
+      - name: gallery
+        label: Church family photos
+        file: content/gallery.json
+        description: >-
+          The row of smaller photos in the Our Church Family section. Drag a row
+          by its handle to reorder. Photos straight from a phone are best.
+        fields:
+          - name: items
+            label: Photos
+            label_singular: photo
+            widget: list
+            summary: "{{fields.caption}}"
+            fields:
+              - { name: image,   label: Photo, widget: image }
+              - { name: caption, label: Caption shown on the photo, widget: string }
+              - { name: alt,     label: Description for screen readers, widget: string, required: false, hint: "Describes the photo for blind visitors and for Google." }
+
+  # ---------------------------------------------------- contact and giving
+  - name: details
+    label: Contact and giving
+    files:
+      - name: contact
+        label: Contact details
+        file: content/contact.json
+        fields:
+          - { name: address_line1, label: Address line 1, widget: string }
+          - { name: address_line2, label: Address line 2, widget: string }
+          - { name: map_url,       label: Google Maps link, widget: string }
+          - { name: office_hours,  label: Church office hours, widget: string }
+          - { name: phone,         label: Phone number as written, widget: string }
+          - { name: phone_link,    label: Phone number for dialling, widget: string, hint: "Digits only with the country code, like +16163677494" }
+          - { name: email,         label: Email address, widget: string }
+
+      - name: giving
+        label: Giving
+        file: content/giving.json
+        fields:
+          - { name: label,          label: Small heading above, widget: string }
+          - { name: heading_plain,  label: Heading, widget: string }
+          - { name: heading_accent, label: Heading, second half in red, widget: string }
+          - { name: intro,          label: Paragraph under the heading, widget: text }
+          - { name: cashapp_tag,    label: Cash App tag, widget: string, hint: "The link is worked out from this, so there is nothing else to change." }
+          - { name: cashapp_note,   label: Line under the Cash App tag, widget: string }
+          - { name: givelify_name,  label: Givelify name, widget: string }
+          - { name: givelify_url,   label: Givelify link, widget: string }
+          - { name: givelify_note,  label: Line under the Givelify name, widget: text }
+
+      - name: watch
+        label: Watch online
+        file: content/watch.json
+        description: >-
+          Leave a link empty and its button simply does not appear, rather than
+          showing a button that goes nowhere.
+        fields:
+          - { name: label,          label: Small heading above, widget: string }
+          - { name: heading_plain,  label: Heading, widget: string }
+          - { name: heading_accent, label: Heading, second half in red, widget: string }
+          - { name: intro,          label: Paragraph under the heading, widget: text }
+          - { name: live_url,       label: Facebook live link, widget: string, required: false }
+          - { name: page_url,       label: Facebook page link, widget: string, required: false }
+
+  # ------------------------------------------------------- page sections
+  - name: sections
+    label: Page sections
+    files:
+      - name: services
+        label: Service times
+        file: content/services.json
+        fields:
+          - { name: sunday_label, label: First card title, widget: string }
+          - { name: sunday_note,  label: First card note, widget: string }
+          - name: sunday_rows
+            label: First card times
+            widget: list
+            fields:
+              - { name: name, label: What, widget: string }
+              - { name: time, label: When, widget: string }
+          - { name: wednesday_label, label: Second card title, widget: string }
+          - { name: wednesday_note,  label: Second card note, widget: string }
+          - name: wednesday_rows
+            label: Second card times
+            widget: list
+            fields:
+              - { name: name, label: What, widget: string }
+              - { name: time, label: When, widget: string }
+          - { name: monthly_label, label: Third card title, widget: string }
+          - { name: monthly_note,  label: Third card note, widget: string }
+          - name: monthly_rows
+            label: Third card times
+            widget: list
+            fields:
+              - { name: name, label: What, widget: string }
+              - { name: time, label: When, widget: string }
+          - { name: monthly_footnote, label: Small note at the bottom of the third card, widget: string, required: false }
+          - { name: visit_summary_line1, label: "Visit section summary, line 1", widget: string }
+          - { name: visit_summary_line2, label: "Visit section summary, line 2", widget: string }
+
+      - name: story
+        label: Our story
+        file: content/story.json
+        fields:
+          - { name: label,          label: Small heading above, widget: string }
+          - { name: heading_plain,  label: Heading, widget: string }
+          - { name: heading_accent, label: Heading, second half in red, widget: string }
+          - name: paragraphs
+            label: The church history
+            label_singular: paragraph
+            widget: list
+            field: { name: text, label: Paragraph, widget: text }
+          - { name: pullquote,         label: The quote at the end, widget: text }
+          - { name: pastors_image,     label: Photo of the pastors, widget: image }
+          - { name: pastors_caption,   label: Caption under that photo, widget: string }
+          - { name: pastors_alt,       label: Description for screen readers, widget: string, required: false }
+          - { name: sanctuary_image,   label: Photo of the sanctuary, widget: image }
+          - { name: sanctuary_caption, label: Caption under that photo, widget: string }
+          - { name: sanctuary_alt,     label: Description for screen readers, widget: string, required: false }
+
+      - name: visit_steps
+        label: What to expect
+        file: content/visit-steps.json
+        description: The tabs under the service times.
+        fields:
+          - name: steps
+            label: Tabs
+            label_singular: tab
+            widget: list
+            summary: "{{fields.tab}}"
+            fields:
+              - { name: tab,     label: Tab name, widget: string }
+              - { name: heading, label: Heading, widget: string }
+              - { name: body,    label: Wording, widget: text }
+
+      - name: family
+        label: Church family section
+        file: content/family.json
+        fields:
+          - { name: label,            label: Small heading above, widget: string }
+          - { name: heading_plain,    label: Heading, widget: string }
+          - { name: heading_accent,   label: Heading, second half in red, widget: string }
+          - { name: intro,            label: Paragraph under the heading, widget: text }
+          - { name: panorama_image,   label: The wide congregation photo, widget: image }
+          - { name: panorama_caption, label: Caption under it, widget: string }
+          - { name: panorama_alt,     label: Description for screen readers, widget: string, required: false }
+
+      - name: events_section
+        label: Events section wording
+        file: content/events-section.json
+        fields:
+          - { name: label,          label: Small heading above, widget: string }
+          - { name: heading_plain,  label: Heading, widget: string }
+          - { name: heading_accent, label: Heading, second half in red, widget: string }
+          - { name: intro,          label: Paragraph under the heading, widget: text }
+          - { name: empty_message,  label: What to show when there are no upcoming events, widget: text }
+
+      - name: visit
+        label: Visit section wording
+        file: content/visit.json
+        fields:
+          - { name: label,          label: Small heading above, widget: string }
+          - { name: heading_plain,  label: Heading, widget: string }
+          - { name: heading_accent, label: Heading, second half in red, widget: string }
+          - { name: form_heading,   label: Heading above the form, widget: string }
+          - { name: form_note,      label: Line under that heading, widget: text }

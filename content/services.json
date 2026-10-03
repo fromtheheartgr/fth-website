@@ -1,0 +1,37 @@
+{
+  "sunday_label": "Sunday",
+  "sunday_note": "Every week",
+  "sunday_rows": [
+    {
+      "name": "Jump Start / Church Education",
+      "time": "9:15 AM"
+    },
+    {
+      "name": "Worship Service",
+      "time": "10:30 AM"
+    }
+  ],
+  "wednesday_label": "Wednesday",
+  "wednesday_note": "Every week",
+  "wednesday_rows": [
+    {
+      "name": "Men in Motion",
+      "time": "9:00 AM"
+    },
+    {
+      "name": "W.O.W. Worship on Wednesday",
+      "time": "6:00 PM"
+    }
+  ],
+  "monthly_label": "2nd Saturday",
+  "monthly_note": "Monthly",
+  "monthly_rows": [
+    {
+      "name": "Sisters From the Heart / Men in Motion",
+      "time": "10:30 AM"
+    }
+  ],
+  "monthly_footnote": "Bring a dish to pass.",
+  "visit_summary_line1": "Sunday · Jump Start / Church Education 9:15 AM, Worship 10:30 AM",
+  "visit_summary_line2": "Wednesday · Men in Motion 9:00 AM, W.O.W. 6:00 PM"
+}
