@@ -105,13 +105,14 @@ main,.topnav,.foot{position:relative;z-index:1}
   rgba(247,242,231,.48) 0%, rgba(247,242,231,.20) 12%, rgba(247,242,231,.04) 26%,
   rgba(247,242,231,0) 44%, rgba(247,242,231,0) 58%,
   rgba(247,242,231,.28) 73%, rgba(247,242,231,.84) 89%, rgba(247,242,231,.98) 100%)}
-.stage__mark{position:relative;width:min(54vh,66vw);max-width:520px;
-  filter:drop-shadow(0 18px 34px rgba(42,33,25,.42))}
+/* No CSS filter here: a live drop-shadow re-blurs every moving shard each frame and stalls phone GPUs.
+   The shadow is painted once into .mark-shadow (see script) and only its opacity changes. */
+.stage__mark{position:relative;width:min(54vh,66vw);max-width:520px;isolation:isolate}
+.mark-shadow{position:absolute;pointer-events:none;opacity:0}
 .stage__mark::before{content:"";position:absolute;left:50%;top:50%;translate:-50% -50%;
   width:150%;height:150%;border-radius:50%;pointer-events:none;z-index:-1;
   background:radial-gradient(closest-side, rgba(255,252,244,.80), rgba(255,252,244,.36) 52%, rgba(255,252,244,0) 76%)}
-.stage__mark svg{display:block;width:100%;height:auto;overflow:visible}
-.shard{will-change:transform,opacity}
+.stage__mark svg{position:relative;display:block;width:100%;height:auto;overflow:visible}
 
 .caption{position:absolute;left:0;right:0;padding-inline:var(--pad);text-align:center;
   opacity:0;transform:translateY(18px);pointer-events:none}
@@ -155,7 +156,7 @@ main,.topnav,.foot{position:relative;z-index:1}
 .lead{font-size:clamp(1.05rem,1.1vw,1.2rem);color:var(--ink-2)}
 .dim{color:var(--muted)}
 .figure{position:relative;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.72);
-  background:rgba(255,252,244,.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(16px);
+  background:#FFFDF6;
   box-shadow:0 38px 70px -34px rgba(42,33,25,.6), 0 1px 0 rgba(255,255,255,.85) inset;
   transition:transform .45s var(--ease),box-shadow .45s var(--ease)}
 .figure:hover{transform:translateY(-3px)}
@@ -178,7 +179,7 @@ main,.topnav,.foot{position:relative;z-index:1}
 /* ---------- service times ---------- */
 .times{display:grid;gap:1rem}
 @media(min-width:760px){.times{grid-template-columns:repeat(3,1fr)}}
-.card{background:rgba(255,252,244,.88);backdrop-filter:blur(18px) saturate(1.08);-webkit-backdrop-filter:blur(16px) saturate(1.08);
+.card{background:#FFFDF6;
   border:1px solid rgba(255,255,255,.72);border-radius:18px;padding:1.6rem;
   box-shadow:0 34px 64px -34px rgba(42,33,25,.55), 0 1px 0 rgba(255,255,255,.85) inset;
   transition:border-color .35s var(--ease),transform .35s var(--ease),box-shadow .35s var(--ease)}
@@ -193,7 +194,7 @@ main,.topnav,.foot{position:relative;z-index:1}
 
 /* ---------- the walk-in stepper (interactive moment) ---------- */
 .walk{border:1px solid rgba(255,255,255,.72);border-radius:20px;overflow:hidden;
-  background:rgba(255,252,244,.88);backdrop-filter:blur(18px) saturate(1.08);-webkit-backdrop-filter:blur(16px) saturate(1.08);
+  background:#FFFDF6;
   box-shadow:0 38px 70px -34px rgba(42,33,25,.58), 0 1px 0 rgba(255,255,255,.85) inset}
 .walk__tabs{display:flex;border-bottom:1px solid var(--line);overflow-x:auto;background:rgba(255,252,244,.55)}
 .walk__tab{flex:1;min-width:120px;background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);
@@ -263,8 +264,7 @@ main,.topnav,.foot{position:relative;z-index:1}
 .thanks.on{display:block;animation:fadeUp .5s var(--ease)}
 
 /* ---------- footer ---------- */
-.foot{border-top:1px solid var(--line);padding:3rem 0 4rem;color:var(--muted);font-size:.88rem;background:rgba(255,252,244,.84);
-  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(16px)}
+.foot{border-top:1px solid var(--line);padding:3rem 0 4rem;color:var(--muted);font-size:.88rem;background:rgba(255,252,244,.97)}
 .foot .wrap{display:grid;gap:1.4rem}
 @media(min-width:760px){.foot .wrap{grid-template-columns:1fr auto;align-items:center}}
 .foot nav{display:flex;gap:1.3rem;flex-wrap:wrap}
@@ -274,14 +274,13 @@ main,.topnav,.foot{position:relative;z-index:1}
 /* ---------- reveal on scroll ---------- */
 
 /* ---------- floating surfaces ---------- */
-.pane{background:rgba(255,252,244,.86);backdrop-filter:blur(18px) saturate(1.08);
-  -webkit-backdrop-filter:blur(16px) saturate(1.08);
+.pane{background:#FFFDF6;
   border:1px solid rgba(255,255,255,.72);border-radius:20px;
   padding:clamp(1.5rem,3vw,2.6rem);
   box-shadow:0 34px 64px -34px rgba(42,33,25,.55), 0 1px 0 rgba(255,255,255,.85) inset;
   transition:transform .45s var(--ease),box-shadow .45s var(--ease)}
 .pane:hover{transform:translateY(-3px);box-shadow:0 44px 78px -34px rgba(42,33,25,.6), 0 1px 0 rgba(255,255,255,.9) inset}
-@supports not (backdrop-filter: blur(4px)){ .pane,.card,.walk,.gal figure,.figure{background:rgba(255,252,244,.96)} }
+/* backdrop-filter removed from content elements for performance; only .topnav retains it */
 
 .rise{opacity:0;transform:translateY(26px)}
 .rise.seen{opacity:1;transform:none;transition:opacity .8s var(--ease),transform .8s var(--ease)}
@@ -345,7 +344,8 @@ main,.topnav,.foot{position:relative;z-index:1}
     </div>
     <div class="stage__scrim"></div>
 
-    <div class="stage__mark">
+    <div class="stage__mark" id="mark">
+      <canvas class="mark-shadow" id="markshadow" aria-hidden="true"></canvas>
       <svg id="marksvg" viewBox="0 0 780 726" role="img"
            aria-label="The From the Heart heart-and-cross emblem restoring itself">
         <defs>
@@ -582,6 +582,26 @@ var cue    = document.getElementById("cue");
 var caps   = [].slice.call(document.querySelectorAll(".caption"));
 var hero   = document.querySelector(".hero");
 
+/* the emblem's shadow, painted ONCE (and again only if the emblem changes size).
+   Same look as drop-shadow(0 18px 34px rgba(42,33,25,.42)), but static, so the GPU never re-blurs it. */
+var mark = document.getElementById("mark"), shadowCv = document.getElementById("markshadow");
+var logoImg = new Image(), shadowW = 0, lastShadowOp = null;
+function paintShadow(){
+  if(!logoImg.complete || !logoImg.naturalWidth) return;
+  var w = mark.offsetWidth; if(!w || Math.abs(w - shadowW) < 2) return;
+  shadowW = w;
+  var h = w * DATA.h / DATA.w, pad = 64;       /* room for the blur to spread */
+  shadowCv.width  = Math.round(w + pad * 2);   /* 1x is plenty: a blur has no fine detail */
+  shadowCv.height = Math.round(h + pad * 2);
+  shadowCv.style.cssText = "left:" + (-pad) + "px;top:" + (-pad) + "px;width:" + (w + pad*2) + "px;height:" + (h + pad*2) + "px";
+  var c = shadowCv.getContext("2d"), far = 10000;
+  c.clearRect(0, 0, shadowCv.width, shadowCv.height);
+  c.shadowColor = "rgba(42,33,25,.42)"; c.shadowBlur = 34; c.shadowOffsetX = far; c.shadowOffsetY = 18;
+  c.drawImage(logoImg, pad - far, pad, w, h);  /* logo drawn off-canvas: only its shadow lands */
+}
+logoImg.onload = paintShadow;
+logoImg.src = "assets/logo-3d.png";
+
 /* split each line into words so they can gather the way the emblem does */
 var capWords = [];
 caps.forEach(function(c, ci){
@@ -627,7 +647,7 @@ function measure(){
 
 function tick(){
   /* the assemble happens over the first 78% of the runway, then it rests */
-  var p = reduce ? 1 : shown < 0 ? target : shown + (target - shown) * 0.16;
+  var p = reduce ? 1 : shown < 0 ? target : shown + (target - shown) * 0.22;
   if(Math.abs(target - p) < 0.0004) p = target;
   if(p === shown){ running = false; return; }
   shown = p;
@@ -635,7 +655,7 @@ function tick(){
   requestAnimationFrame(tick);
 }
 
-var lastCap = -1, lastSettle = null;
+var lastCap = -1, lastSettle = null, lastBurst = null, lastCue = null;
 function draw(a, raw){
   for(var i = 0; i < nodes.length; i++){
     var n = nodes[i], s = n.s, t = shardT(a, s.delay), k = 1 - t;
@@ -644,7 +664,12 @@ function draw(a, raw){
     if(n.last !== tr + op){ n.g.setAttribute("transform", tr); n.g.setAttribute("opacity", op); n.last = tr + op; }
   }
   /* the gold ignites only at the very end, when the cross completes */
-  burst.setAttribute("opacity", (Math.pow(clamp((a - 0.74) / 0.26, 0, 1), 2.3) * 0.42).toFixed(3));
+  var bo = (Math.pow(clamp((a - 0.74) / 0.26, 0, 1), 2.3) * 0.42).toFixed(3);
+  if(bo !== lastBurst){ burst.setAttribute("opacity", bo); lastBurst = bo; }
+
+  /* the shadow settles in as the pieces land (opacity only: no repaint) */
+  var so = Math.pow(clamp((a - 0.55) / 0.45, 0, 1), 2).toFixed(3);
+  if(so !== lastShadowOp){ shadowCv.style.opacity = so; lastShadowOp = so; }
 
   /* the room behind, easing in and brightening as the mark restores */
   var sc = "scale(" + (1.07 - 0.07 * a).toFixed(4) + ")";
@@ -670,11 +695,12 @@ function draw(a, raw){
   }
   var on = raw > 0.80;
   if(on !== lastSettle){ settle.classList.toggle("on", on); lastSettle = on; }
-  cue.classList.toggle("hide", raw > 0.06);
+  var hideCue = raw > 0.06;
+  if(hideCue !== lastCue){ cue.classList.toggle("hide", hideCue); lastCue = hideCue; }
 }
 
 addEventListener("scroll", measure, {passive:true});
-addEventListener("resize", measure);
+addEventListener("resize", function(){ measure(); paintShadow(); });
 measure();
 
 /* ---------- 2. the hero video, when it exists ---------- */
