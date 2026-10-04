@@ -112,7 +112,11 @@ main,.topnav,.foot{position:relative;z-index:1}
 .stage__mark::before{content:"";position:absolute;left:50%;top:50%;translate:-50% -50%;
   width:150%;height:150%;border-radius:50%;pointer-events:none;z-index:-1;
   background:radial-gradient(closest-side, rgba(255,252,244,.80), rgba(255,252,244,.36) 52%, rgba(255,252,244,0) 76%)}
-.stage__mark svg{position:relative;display:block;width:100%;height:auto;overflow:visible}
+.stage__mark svg{position:relative;display:block;width:100%;height:auto;overflow:visible;opacity:0}
+.pieces{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
+.pieces canvas{position:absolute;display:block}
+.pieces canvas.bit{will-change:transform,opacity}
+.pieces.is-whole canvas.bit{display:none}
 
 .caption{position:absolute;left:0;right:0;padding-inline:var(--pad);text-align:center;
   opacity:0;transform:translateY(18px);pointer-events:none}
@@ -294,6 +298,8 @@ main,.topnav,.foot{position:relative;z-index:1}
   .topnav .btn .full{display:none}
   .topnav .btn .short{display:inline}
   .topnav{gap:.7rem}
+  /* phones: a live blur behind the bar costs GPU on every scroll frame; a solid bar looks the same here */
+  .topnav,.topnav.solid{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(247,242,231,.97)}
   .topnav.open .navlinks{display:flex;position:absolute;top:100%;left:0;right:0;flex-direction:column;gap:0;
     background:var(--cream-2);border-bottom:1px solid var(--line);box-shadow:0 22px 44px -20px rgba(42,33,25,.45);z-index:70}
   .topnav.open .navlinks a{padding:1rem var(--pad);border-top:1px solid var(--line)}
@@ -349,9 +355,6 @@ main,.topnav,.foot{position:relative;z-index:1}
       <svg id="marksvg" viewBox="0 0 780 726" role="img"
            aria-label="The From the Heart heart-and-cross emblem restoring itself">
         <defs>
-          <pattern id="art" patternUnits="userSpaceOnUse" x="0" y="0" width="780" height="726">
-            <image href="assets/logo-3d.png" x="0" y="0" width="780" height="726"/>
-          </pattern>
           <radialGradient id="burstGrad">
             <stop offset="0"   stop-color="#FFF3CE" stop-opacity=".9"/>
             <stop offset=".22" stop-color="#F6C560" stop-opacity=".5"/>
@@ -359,9 +362,10 @@ main,.topnav,.foot{position:relative;z-index:1}
             <stop offset="1"   stop-color="#E8B252" stop-opacity="0"/>
           </radialGradient>
         </defs>
-        <circle id="burst" cx="404" cy="268" r="150" fill="url(#burstGrad)" opacity="0"/>
-        <g id="shards"></g>
+        <circle cx="404" cy="268" r="150" fill="url(#burstGrad)"/>
       </svg>
+      <!-- the 72 pieces of the emblem live here as small pre-cut images the GPU slides around -->
+      <div class="pieces" id="pieces" aria-hidden="true"></div>
     </div>
 
     <div class="caption cap-1" data-cap="0"><p><span class="eyebrow">From The Heart Christian Community Church</span><em class="tagline">Real, Raw &amp; Relevant</em></p></div>
@@ -564,18 +568,8 @@ var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /* ---------- the 3D emblem, shattered into real pieces of the actual file ---------- */
 var DATA = {"w": 780, "h": 726, "shards": [{"cx": 63.0, "cy": 60.5, "d": "M-1.4 -0.7L128.0 -1.0L109.3 123.2Z", "dx": -343.5, "dy": -246.5, "rot": 4.0, "delay": 0.116}, {"cx": 54.0, "cy": 63.0, "d": "M-0.6 -1.5L110.1 122.5L-1.0 127.7Z", "dx": -408.4, "dy": -282.9, "rot": -21.0, "delay": 0.19}, {"cx": 197.0, "cy": 69.5, "d": "M125.4 -0.7L265.1 -1.2L269.5 140.8Z", "dx": -344.6, "dy": -406.4, "rot": -25.1, "delay": 0.167}, {"cx": 188.0, "cy": 69.5, "d": "M126.1 -1.4L270.2 140.1L107.3 122.5Z", "dx": -400.6, "dy": -451.5, "rot": -26.1, "delay": 0.109}, {"cx": 341.0, "cy": 54.0, "d": "M262.5 -0.6L420.1 -0.7L362.9 110.2Z", "dx": -123.1, "dy": -602.3, "rot": -19.5, "delay": 0.07}, {"cx": 313.0, "cy": 69.5, "d": "M263.4 -1.5L364.1 109.2L268.1 140.8Z", "dx": -118.8, "dy": -351.1, "rot": 32.0, "delay": 0.209}, {"cx": 467.5, "cy": 70.0, "d": "M417.5 -1.0L518.8 -1.2L492.6 142.1Z", "dx": 140.0, "dy": -410.6, "rot": -13.3, "delay": 0.23}, {"cx": 427.0, "cy": 70.0, "d": "M418.6 -1.6L493.5 141.5L361.1 109.2Z", "dx": 78.6, "dy": -482.6, "rot": -19.7, "delay": 0.103}, {"cx": 590.0, "cy": 46.0, "d": "M516.2 -0.5L651.8 -1.0L664.1 93.4Z", "dx": 377.1, "dy": -463.6, "rot": 24.1, "delay": 0.167}, {"cx": 577.5, "cy": 70.0, "d": "M517.0 -1.4L664.7 92.4L491.1 141.6Z", "dx": 423.8, "dy": -513.7, "rot": -27.2, "delay": 0.257}, {"cx": 715.0, "cy": 75.5, "d": "M649.1 -0.8L781.0 -1.2L780.6 152.8Z", "dx": 350.5, "dy": -240.5, "rot": -19.5, "delay": 0.067}, {"cx": 715.0, "cy": 75.5, "d": "M649.7 -1.4L781.2 152.3L661.6 92.7Z", "dx": 410.1, "dy": -281.4, "rot": 18.5, "delay": 0.086}, {"cx": 70.0, "cy": 185.0, "d": "M-1.4 125.8L109.5 120.3L141.3 250.6Z", "dx": -548.0, "dy": -236.5, "rot": -13.8, "delay": 0.019}, {"cx": 70.0, "cy": 198.5, "d": "M-0.7 125.1L141.9 249.8L-1.0 272.4Z", "dx": -628.5, "dy": -250.6, "rot": -27.9, "delay": 0.152}, {"cx": 188.0, "cy": 166.0, "d": "M107.2 121.1L270.3 139.0L237.6 212.9Z", "dx": -562.9, "dy": -425.8, "rot": -17.5, "delay": 0.156}, {"cx": 172.0, "cy": 185.0, "d": "M107.8 120.4L238.4 211.9L139.8 250.8Z", "dx": -362.5, "dy": -229.6, "rot": -8.7, "delay": 0.118}, {"cx": 329.5, "cy": 161.0, "d": "M267.2 139.1L363.3 107.2L392.9 215.5Z", "dx": -157.1, "dy": -406.9, "rot": 31.2, "delay": 0.126}, {"cx": 313.5, "cy": 176.5, "d": "M268.0 138.0L393.4 214.7L235.3 212.1Z", "dx": -238.0, "dy": -450.0, "rot": 5.1, "delay": 0.225}, {"cx": 430.5, "cy": 166.5, "d": "M361.2 107.8L493.8 139.9L500.0 227.1Z", "dx": 142.7, "dy": -536.8, "rot": -21.6, "delay": 0.04}, {"cx": 430.5, "cy": 166.5, "d": "M361.6 107.3L500.5 226.5L390.9 215.5Z", "dx": 158.7, "dy": -597.3, "rot": 27.8, "delay": 0.213}, {"cx": 577.5, "cy": 165.5, "d": "M490.7 140.2L664.3 91.1L618.7 241.2Z", "dx": 322.2, "dy": -263.3, "rot": -17.0, "delay": 0.049}, {"cx": 555.0, "cy": 189.5, "d": "M491.4 139.2L619.7 240.4L497.7 226.7Z", "dx": 377.3, "dy": -307.8, "rot": 16.3, "delay": 0.245}, {"cx": 721.5, "cy": 165.0, "d": "M661.9 91.1L781.6 150.9L780.7 239.7Z", "dx": 538.4, "dy": -249.4, "rot": -20.6, "delay": 0.247}, {"cx": 699.0, "cy": 165.5, "d": "M662.7 90.6L781.4 239.0L616.9 240.6Z", "dx": 595.4, "dy": -295.2, "rot": 26.0, "delay": 0.157}, {"cx": 70.0, "cy": 310.0, "d": "M-1.5 270.8L141.6 248.2L132.1 373.2Z", "dx": -775.7, "dy": -99.6, "rot": -5.3, "delay": 0.027}, {"cx": 65.5, "cy": 327.5, "d": "M-0.8 269.8L132.8 372.3L-1.2 385.6Z", "dx": -465.2, "dy": -39.5, "rot": -31.4, "delay": 0.25}, {"cx": 200.0, "cy": 292.0, "d": "M138.9 248.7L237.4 210.0L260.7 374.6Z", "dx": -512.9, "dy": -148.7, "rot": -17.8, "delay": 0.183}, {"cx": 195.5, "cy": 311.0, "d": "M139.7 247.8L261.4 373.9L130.1 372.9Z", "dx": -605.8, "dy": -125.6, "rot": -16.5, "delay": 0.214}, {"cx": 313.5, "cy": 280.0, "d": "M235.3 210.8L393.1 213.3L387.9 350.4Z", "dx": -478.9, "dy": -403.0, "rot": 6.6, "delay": 0.076}, {"cx": 311.5, "cy": 292.0, "d": "M236.0 210.1L388.6 349.6L259.2 374.6Z", "dx": -583.1, "dy": -409.1, "rot": -22.1, "delay": 0.187}, {"cx": 472.0, "cy": 304.0, "d": "M390.6 213.4L499.6 224.3L554.4 395.6Z", "dx": 379.9, "dy": -212.0, "rot": -29.3, "delay": 0.059}, {"cx": 470.0, "cy": 304.0, "d": "M391.2 212.9L554.9 395.1L385.7 349.7Z", "dx": 440.7, "dy": -252.1, "rot": 4.0, "delay": 0.222}, {"cx": 586.0, "cy": 300.5, "d": "M497.7 225.0L618.9 238.3L674.0 377.4Z", "dx": 597.5, "dy": -147.8, "rot": 7.8, "delay": 0.073}, {"cx": 586.0, "cy": 309.5, "d": "M498.2 224.5L674.5 376.8L553.1 395.7Z", "dx": 681.7, "dy": -144.3, "rot": 28.4, "delay": 0.053}, {"cx": 699.0, "cy": 294.5, "d": "M616.7 239.2L781.3 237.4L780.9 352.7Z", "dx": 767.6, "dy": -132.0, "rot": -32.9, "delay": 0.07}, {"cx": 699.0, "cy": 307.5, "d": "M617.1 238.5L781.5 351.9L672.5 377.6Z", "dx": 460.6, "dy": -64.2, "rot": -3.7, "delay": 0.016}, {"cx": 65.5, "cy": 414.0, "d": "M-1.6 384.1L132.6 370.9L116.6 458.4Z", "dx": -540.9, "dy": 65.9, "rot": -22.0, "delay": 0.096}, {"cx": 57.5, "cy": 425.5, "d": "M-1.0 383.2L117.2 457.4L-1.2 468.0Z", "dx": -616.3, "dy": 89.9, "rot": 4.9, "delay": 0.034}, {"cx": 204.5, "cy": 424.0, "d": "M129.8 371.2L261.2 372.1L279.0 479.0Z", "dx": -671.3, "dy": 171.2, "rot": -9.4, "delay": 0.232}, {"cx": 196.5, "cy": 424.0, "d": "M130.4 370.5L279.5 478.3L114.2 457.5Z", "dx": -749.9, "dy": 183.4, "rot": 32.7, "delay": 0.171}, {"cx": 336.5, "cy": 412.5, "d": "M258.5 372.8L388.0 347.7L414.4 478.2Z", "dx": -343.5, "dy": 246.5, "rot": 13.0, "delay": 0.152}, {"cx": 336.5, "cy": 425.0, "d": "M259.0 372.0L414.9 477.4L276.8 478.8Z", "dx": -357.7, "dy": 321.5, "rot": -24.5, "delay": 0.009}, {"cx": 470.0, "cy": 427.0, "d": "M385.7 348.2L555.1 393.6L551.8 507.3Z", "dx": 489.7, "dy": 303.9, "rot": -32.8, "delay": 0.237}, {"cx": 469.0, "cy": 427.0, "d": "M386.2 347.7L552.4 506.7L412.2 478.0Z", "dx": 549.1, "dy": 345.0, "rot": 13.7, "delay": 0.25}, {"cx": 613.0, "cy": 420.5, "d": "M552.1 393.7L674.4 375.3L616.3 467.3Z", "dx": 761.3, "dy": 152.3, "rot": -32.6, "delay": 0.165}, {"cx": 583.5, "cy": 449.5, "d": "M553.1 392.7L617.8 466.1L550.3 507.4Z", "dx": 427.3, "dy": 148.1, "rot": -1.2, "delay": 0.19}, {"cx": 726.5, "cy": 430.0, "d": "M671.6 375.4L780.8 350.0L780.6 511.3Z", "dx": 537.0, "dy": 82.9, "rot": -12.3, "delay": 0.26}, {"cx": 698.0, "cy": 442.5, "d": "M672.6 374.5L781.3 510.7L614.6 466.0Z", "dx": 607.2, "dy": 121.6, "rot": -28.9, "delay": 0.142}, {"cx": 81.0, "cy": 527.5, "d": "M-1.5 466.4L116.4 455.5L163.5 599.8Z", "dx": -623.8, "dy": 257.6, "rot": 16.1, "delay": 0.234}, {"cx": 81.0, "cy": 535.0, "d": "M-0.8 465.6L164.0 599.1L-1.2 604.1Z", "dx": -687.0, "dy": 296.6, "rot": 16.1, "delay": 0.183}, {"cx": 196.5, "cy": 535.0, "d": "M114.4 456.1L279.4 476.9L231.5 614.7Z", "dx": -349.8, "dy": 241.2, "rot": 19.9, "delay": 0.238}, {"cx": 173.0, "cy": 535.0, "d": "M114.9 455.6L232.3 614.2L162.2 600.1Z", "dx": -429.1, "dy": 263.8, "rot": -10.1, "delay": 0.178}, {"cx": 345.5, "cy": 533.0, "d": "M276.5 477.1L414.6 475.9L409.6 591.9Z", "dx": -158.8, "dy": 470.6, "rot": 27.3, "delay": 0.226}, {"cx": 319.5, "cy": 545.0, "d": "M277.5 476.2L410.3 590.9L229.8 614.0Z", "dx": -255.3, "dy": 511.1, "rot": -5.6, "delay": 0.206}, {"cx": 482.0, "cy": 535.0, "d": "M412.1 476.0L552.5 505.4L492.3 596.1Z", "dx": 370.8, "dy": 537.7, "rot": 24.7, "delay": 0.149}, {"cx": 450.0, "cy": 535.0, "d": "M412.9 475.4L493.4 595.5L407.8 591.7Z", "dx": 154.1, "dy": 342.7, "rot": 8.5, "delay": 0.099}, {"cx": 616.0, "cy": 543.0, "d": "M549.5 505.3L616.2 464.1L682.3 622.5Z", "dx": 428.3, "dy": 264.6, "rot": 5.6, "delay": 0.158}, {"cx": 586.5, "cy": 563.0, "d": "M550.5 504.4L682.9 621.8L490.5 594.9Z", "dx": 439.5, "dy": 347.0, "rot": -28.5, "delay": 0.166}, {"cx": 698.0, "cy": 523.0, "d": "M614.8 465.0L781.6 509.5L781.1 582.2Z", "dx": 627.1, "dy": 252.7, "rot": 33.5, "delay": 0.229}, {"cx": 698.0, "cy": 543.0, "d": "M615.2 464.5L781.5 581.4L681.1 622.8Z", "dx": 678.8, "dy": 307.7, "rot": 15.5, "delay": 0.101}, {"cx": 81.0, "cy": 662.0, "d": "M-1.5 602.5L163.9 597.7L113.3 727.6Z", "dx": -336.3, "dy": 252.4, "rot": 16.0, "delay": 0.151}, {"cx": 56.0, "cy": 664.5, "d": "M-0.7 601.6L114.3 726.8L-1.1 727.2Z", "dx": -406.5, "dy": 284.6, "rot": -4.0, "delay": 0.218}, {"cx": 197.5, "cy": 662.0, "d": "M161.4 597.4L232.0 611.8L233.5 727.5Z", "dx": -339.5, "dy": 409.0, "rot": -28.3, "delay": 0.195}, {"cx": 172.5, "cy": 662.0, "d": "M162.4 596.9L234.3 726.9L111.6 727.0Z", "dx": -415.7, "dy": 443.3, "rot": -32.0, "delay": 0.156}, {"cx": 319.5, "cy": 658.0, "d": "M229.6 612.6L410.1 589.6L360.7 727.5Z", "dx": -182.8, "dy": 593.1, "rot": -1.3, "delay": 0.06}, {"cx": 295.5, "cy": 669.5, "d": "M230.3 611.7L361.7 726.6L231.8 727.1Z", "dx": -137.9, "dy": 346.9, "rot": 13.5, "delay": 0.129}, {"cx": 474.0, "cy": 658.0, "d": "M407.5 589.6L492.5 593.0L541.0 727.3Z", "dx": 150.0, "dy": 408.5, "rot": 7.8, "delay": 0.239}, {"cx": 450.0, "cy": 658.0, "d": "M408.3 589.0L541.6 726.6L358.8 726.8Z", "dx": 125.0, "dy": 476.7, "rot": -16.6, "delay": 0.003}, {"cx": 586.5, "cy": 660.0, "d": "M490.7 593.8L682.9 620.7L628.7 727.5Z", "dx": 389.9, "dy": 457.1, "rot": -13.5, "delay": 0.176}, {"cx": 560.0, "cy": 660.0, "d": "M491.2 593.2L629.6 726.8L539.6 727.5Z", "dx": 390.6, "dy": 529.3, "rot": -20.2, "delay": 0.044}, {"cx": 730.5, "cy": 653.5, "d": "M679.9 620.7L780.8 579.6L780.6 727.5Z", "dx": 356.0, "dy": 235.6, "rot": 27.6, "delay": 0.172}, {"cx": 704.0, "cy": 673.5, "d": "M681.1 619.6L781.5 726.6L626.8 726.7Z", "dx": 389.3, "dy": 298.6, "rot": -3.9, "delay": 0.232}]};
-var host = document.getElementById("shards"), nodes = [];
-DATA.shards.forEach(function(s){
-  var g = document.createElementNS("http://www.w3.org/2000/svg","g");
-  g.setAttribute("class","shard");
-  var p = document.createElementNS("http://www.w3.org/2000/svg","path");
-  p.setAttribute("d", s.d); p.setAttribute("fill","url(#art)");
-  g.appendChild(p); host.appendChild(g);
-  nodes.push({g:g, s:s, last:null});
-});
-
 var bgMedia = [].slice.call(document.querySelectorAll(".stage__bg img, .stage__bg video")), bgScale = null;
-var burst  = document.getElementById("burst");
+var burst  = document.getElementById("marksvg");
 var bg     = document.getElementById("bg");
 var settle = document.getElementById("settle");
 var cue    = document.getElementById("cue");
@@ -599,7 +593,66 @@ function paintShadow(){
   c.shadowColor = "rgba(42,33,25,.42)"; c.shadowBlur = 34; c.shadowOffsetX = far; c.shadowOffsetY = 18;
   c.drawImage(logoImg, pad - far, pad, w, h);  /* logo drawn off-canvas: only its shadow lands */
 }
-logoImg.onload = paintShadow;
+
+/* ---------- the emblem's 72 pieces: cut ONCE into small images, then each frame the GPU just slides them.
+   (72 live SVG paths filled with the logo had to be repainted every frame, which phones can't keep up with.) ---------- */
+var piecesBox = document.getElementById("pieces");
+var DPR = Math.min(window.devicePixelRatio || 1, 2);
+var pieces = DATA.shards.map(function(s){
+  return { s: s, pts: s.d.match(/-?\d+(?:\.\d+)?/g).map(Number) };
+});
+var whole = null, wholeShown = null, Sc = 0, cutW = 0, lastA = null, curA = 0;
+
+function cutPieces(){
+  if(!logoImg.complete || !logoImg.naturalWidth) return;
+  var w = mark.offsetWidth; if(!w || (whole && Math.abs(w - cutW) < 1)) return;
+  cutW = w; Sc = w / DATA.w; lastA = null; wholeShown = null;
+  var S = Sc * DPR;                                         /* device pixels per logo unit */
+  var full = document.createElement("canvas");
+  full.width = Math.round(DATA.w * S); full.height = Math.round(DATA.h * S);
+  full.getContext("2d").drawImage(logoImg, 0, 0, full.width, full.height);
+  full.style.cssText = "left:0;top:0;width:" + (full.width / DPR) + "px;height:" + (full.height / DPR) + "px";
+  piecesBox.textContent = "";
+  pieces.forEach(function(pc){
+    var p = pc.pts, s = pc.s;
+    var x0 = Math.floor(Math.min(p[0],p[2],p[4]) * S) - 1, y0 = Math.floor(Math.min(p[1],p[3],p[5]) * S) - 1;
+    var x1 = Math.ceil (Math.max(p[0],p[2],p[4]) * S) + 1, y1 = Math.ceil (Math.max(p[1],p[3],p[5]) * S) + 1;
+    var c = document.createElement("canvas"); c.width = x1 - x0; c.height = y1 - y0; c.className = "bit";
+    var g = c.getContext("2d");
+    g.beginPath();
+    g.moveTo(p[0]*S - x0, p[1]*S - y0); g.lineTo(p[2]*S - x0, p[3]*S - y0); g.lineTo(p[4]*S - x0, p[5]*S - y0);
+    g.closePath(); g.clip(); g.drawImage(full, -x0, -y0);
+    c.style.cssText = "left:" + (x0 / DPR) + "px;top:" + (y0 / DPR) + "px;width:" + (c.width / DPR) + "px;height:" + (c.height / DPR) +
+      "px;transform-origin:" + ((s.cx * S - x0) / DPR) + "px " + ((s.cy * S - y0) / DPR) + "px";
+    pc.el = c; pc.tr = pc.op = null;
+    piecesBox.appendChild(c);
+  });
+  piecesBox.appendChild(full); whole = full;
+}
+
+function drawShards(a){
+  curA = a;
+  if(!whole || a === lastA) return;
+  lastA = a;
+  var done = a >= 1;                       /* fully restored: show the whole emblem, pixel-exact, no seams */
+  if(done !== wholeShown){
+    whole.style.visibility = done ? "visible" : "hidden";
+    piecesBox.className = done ? "pieces is-whole" : "pieces";
+    wholeShown = done;
+  }
+  if(done) return;
+  for(var i = 0; i < pieces.length; i++){
+    var pc = pieces[i], s = pc.s, t = shardT(a, s.delay), k = 1 - t;
+    var tr = "translate(" + (s.dx * k * Sc).toFixed(1) + "px," + (s.dy * k * Sc).toFixed(1) + "px) rotate(" + (s.rot * k).toFixed(2) + "deg)";
+    var op = (0.06 + 0.94 * t).toFixed(3);
+    if(pc.tr !== tr){ pc.el.style.transform = tr; pc.tr = tr; }
+    if(pc.op !== op){ pc.el.style.opacity = op; pc.op = op; }
+  }
+}
+
+function relayout(){ paintShadow(); cutPieces(); drawShards(curA); }
+logoImg.onload = relayout;
+addEventListener("load", relayout);
 logoImg.src = "assets/logo-3d.png";
 
 /* split each line into words so they can gather the way the emblem does */
@@ -657,15 +710,10 @@ function tick(){
 
 var lastCap = -1, lastSettle = null, lastBurst = null, lastCue = null;
 function draw(a, raw){
-  for(var i = 0; i < nodes.length; i++){
-    var n = nodes[i], s = n.s, t = shardT(a, s.delay), k = 1 - t;
-    var tr = "translate(" + (s.dx*k).toFixed(1) + " " + (s.dy*k).toFixed(1) + ") rotate(" + (s.rot*k).toFixed(1) + " " + s.cx + " " + s.cy + ")";
-    var op = (0.06 + 0.94 * t).toFixed(3);
-    if(n.last !== tr + op){ n.g.setAttribute("transform", tr); n.g.setAttribute("opacity", op); n.last = tr + op; }
-  }
+  drawShards(a);
   /* the gold ignites only at the very end, when the cross completes */
   var bo = (Math.pow(clamp((a - 0.74) / 0.26, 0, 1), 2.3) * 0.42).toFixed(3);
-  if(bo !== lastBurst){ burst.setAttribute("opacity", bo); lastBurst = bo; }
+  if(bo !== lastBurst){ burst.style.opacity = bo; lastBurst = bo; }
 
   /* the shadow settles in as the pieces land (opacity only: no repaint) */
   var so = Math.pow(clamp((a - 0.55) / 0.45, 0, 1), 2).toFixed(3);
@@ -700,7 +748,7 @@ function draw(a, raw){
 }
 
 addEventListener("scroll", measure, {passive:true});
-addEventListener("resize", function(){ measure(); paintShadow(); });
+addEventListener("resize", function(){ measure(); relayout(); });
 measure();
 
 /* ---------- 2. the hero video, when it exists ---------- */
