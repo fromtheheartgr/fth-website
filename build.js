@@ -238,6 +238,8 @@ if (fs.existsSync(path.join(ROOT, "admin"))) {
   wireAdminToRepo();
 }
 fs.writeFileSync(path.join(DIST, "index.html"), html);
+/* Cloudflare Pages reads its header rules from a _headers file in the published folder */
+if (fs.existsSync(path.join(ROOT, "_headers"))) fs.copyFileSync(path.join(ROOT, "_headers"), path.join(DIST, "_headers"));
 
 /* The admin page has to know which repository it is saving into. Rather than
    having someone type it in and keep it in step, it is read from the host at
