@@ -146,8 +146,14 @@ function buildPanorama() {
 }
 
 function buildGallery() {
+  /* "focus" is the spot the editor tapped (e.g. "50% 30%"): whatever shape the tile is
+     (square for the big first photo, 4:3 for the rest), that spot stays in view. */
+  const focusStyle = (f) => {
+    const m = /^(\d{1,3})% (\d{1,3})%$/.exec(String(f || ""));
+    return m ? ` style="object-position:${Math.min(100, +m[1])}% ${Math.min(100, +m[2])}%"` : "";
+  };
   return (gallery.items || []).map((g) =>
-    `      <figure><img src="${esc(assetPath(g.image))}" alt="${esc(g.alt || g.caption)}" loading="lazy"><figcaption>${esc(g.caption)}</figcaption></figure>`
+    `      <figure><img src="${esc(assetPath(g.image))}" alt="${esc(g.alt || g.caption)}" loading="lazy"${focusStyle(g.focus)}>${g.caption ? `<figcaption>${esc(g.caption)}</figcaption>` : ""}</figure>`
   ).join("\n");
 }
 

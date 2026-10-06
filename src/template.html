@@ -213,6 +213,8 @@ main,.topnav,.foot{position:relative;z-index:1}
 
 /* ---------- family / news gallery ---------- */
 .gal{display:grid;gap:1rem;grid-template-columns:repeat(2,1fr)}
+/* phones: the first photo runs full width, then pairs – so 3, 5, 7, 9… photos fill every row */
+.gal>*:nth-child(1){grid-column:span 2}
 @media(min-width:820px){.gal{grid-template-columns:repeat(4,1fr)}
  .gal>*:nth-child(1){grid-column:span 2;grid-row:span 2}}
 .gal figure{margin:0;position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--panel);box-shadow:var(--shadow)}
@@ -220,7 +222,7 @@ main,.topnav,.foot{position:relative;z-index:1}
 .gal figure:hover img{transform:scale(1.05)}
 .gal figcaption{position:absolute;left:0;right:0;bottom:0;padding:1.6rem .9rem .7rem;font-size:.8rem;color:#fff;
   background:linear-gradient(transparent,rgba(27,42,74,.9))}
-.gal>*:nth-child(1) img{aspect-ratio:1/1}
+@media(min-width:820px){.gal>*:nth-child(1) img{aspect-ratio:1/1}}
 
 /* ---------- upcoming events ---------- */
 .events{display:grid;gap:1rem}

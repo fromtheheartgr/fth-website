@@ -296,7 +296,7 @@ body {
   padding: .75rem 1.6rem; border-radius: 100px;
   font-size: .9rem; font-weight: 500;
   transition: transform .28s cubic-bezier(.34,1.56,.64,1);
-  pointer-events: none; z-index: 500; white-space: nowrap;
+  pointer-events: none; z-index: 500; max-width: calc(100vw - 2rem); text-align: center;
 }
 #toast.on { transform: translateX(-50%) translateY(0); }
 #toast.ok  { background: var(--green); }
@@ -311,12 +311,75 @@ body {
 }
 
 /* ═══════════════════════════════════════════
+   PHOTOS
+═══════════════════════════════════════════ */
+.sec-text { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 1.1rem; }
+.sec-text summary { cursor: pointer; padding: .85rem 1rem; font-weight: 600; font-size: .92rem; list-style: none; }
+.sec-text summary::-webkit-details-marker { display: none; }
+.sec-text summary::after { content: '▾'; float: right; color: var(--muted); }
+.sec-text[open] summary::after { content: '▴'; }
+.sec-text .sec-body { padding: 0 1rem 1rem; }
+.sec-preview { margin-top: .9rem; padding: .9rem 1rem; background: #F7F2E7; border-radius: 8px; text-align: center; }
+.sec-preview .lbl { font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; color: #8A6516; }
+.sec-preview .hd  { font-family: Georgia, serif; font-size: 1.35rem; font-weight: 600; color: #1B2A4A; line-height: 1.2; margin: .25rem 0; }
+.sec-preview .hd em { font-style: normal; color: #A8202F; }
+.sec-preview .in  { font-size: .85rem; color: #6E6154; }
+
+.ph-toolbar { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: .35rem; }
+.ph-count { font-weight: 700; font-size: 1rem; }
+.ph-fit { font-size: .82rem; margin-bottom: 1rem; color: var(--muted); }
+.ph-fit.good { color: var(--green); }
+.ph-fit.tip  { color: #b45309; }
+.ph-list { display: flex; flex-direction: column; gap: .75rem; margin-bottom: 1.25rem; }
+.ph-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: .85rem; display: grid; grid-template-columns: 300px 1fr; gap: 1rem; align-items: start; }
+.ph-card.is-new { border-color: #86efac; box-shadow: 0 0 0 2px #dcfce7; }
+.ph-stage { display: flex; justify-content: center; align-items: center; background: #1f2937; border-radius: 8px; min-height: 120px; padding: 6px; }
+.ph-box { position: relative; cursor: crosshair; touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+.ph-box img { display: block; width: 100%; height: 100%; border-radius: 3px; pointer-events: none; }
+.ph-frame { position: absolute; border: 2px solid #fff; border-radius: 3px; box-shadow: 0 0 0 9999px rgba(0,0,0,.5); pointer-events: none; transition: left .15s, top .15s; }
+.ph-boxclip { position: absolute; inset: 0; overflow: hidden; border-radius: 3px; pointer-events: none; }
+.ph-dot { position: absolute; width: 28px; height: 28px; margin: -14px 0 0 -14px; border-radius: 50%; border: 3px solid #fff; background: transparent; box-shadow: 0 0 0 2px rgba(168,32,47,.95), 0 1px 6px rgba(0,0,0,.5); pointer-events: none; transition: left .15s, top .15s; }
+.ph-dot::after { content: ''; position: absolute; left: 50%; top: 50%; width: 4px; height: 4px; margin: -2px 0 0 -2px; border-radius: 50%; background: #fff; }
+.ph-info { min-width: 0; }
+.ph-pos { font-size: .78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-bottom: .45rem; display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; }
+.ph-tag { font-size: .68rem; padding: .12rem .45rem; border-radius: 99px; background: var(--red-bg); color: var(--red); letter-spacing: 0; }
+.ph-tag.new { background: #dcfce7; color: var(--green); }
+.ph-tag.warn { background: #fef3c7; color: #b45309; }
+.ph-info .field + .field { margin-top: .55rem; }
+.ph-tipline { font-size: .78rem; color: var(--muted); margin-top: .45rem; }
+.ph-actions { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .7rem; }
+.ph-actions button { min-width: 2.4rem; }
+.ph-empty { text-align: center; padding: 2rem 1rem; color: var(--muted); background: var(--white); border: 2px dashed var(--border); border-radius: var(--radius); }
+.ph-busy { display: flex; align-items: center; gap: .6rem; padding: .8rem 1rem; background: #fffbeb; border: 1px solid #fde68a; border-radius: var(--radius); font-size: .88rem; margin-bottom: .75rem; }
+.ph-busy .spin { border-color: rgba(180,83,9,.25); border-top-color: #b45309; }
+
+.ph-prev-head { display: flex; align-items: center; justify-content: space-between; margin: .25rem 0 .6rem; }
+.ph-prev-head h3 { font-size: 1rem; }
+.seg { display: inline-flex; border: 1.5px solid var(--border); border-radius: 8px; overflow: hidden; }
+.seg button { border: 0; background: var(--white); padding: .4rem .8rem; font: inherit; font-size: .82rem; cursor: pointer; color: var(--muted); }
+.seg button.on { background: var(--red); color: #fff; }
+.ph-preview-wrap { background: #F7F2E7; border-radius: var(--radius); padding: 1rem; margin-bottom: 1.5rem; }
+.ph-preview { display: grid; gap: 8px; margin: 0 auto; }
+.ph-preview.desk  { grid-template-columns: repeat(4, 1fr); max-width: 620px; }
+.ph-preview.phone { grid-template-columns: repeat(2, 1fr); max-width: 260px; }
+.ph-preview figure { margin: 0; position: relative; border-radius: 6px; overflow: hidden; background: #e7dfcf; }
+.ph-preview img { display: block; width: 100%; height: 100%; object-fit: cover; aspect-ratio: 4/3; }
+.ph-preview figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: .8rem .4rem .25rem; font-size: .58rem; color: #fff; background: linear-gradient(transparent, rgba(27,42,74,.9)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ph-preview.desk  > :first-child { grid-column: span 2; grid-row: span 2; }
+.ph-preview.desk  > :first-child img { aspect-ratio: 1/1; }
+.ph-preview.phone > :first-child { grid-column: span 2; }
+.ph-preview .gap { border: 2px dashed #cbbd9f; background: transparent; aspect-ratio: 4/3; }
+
+/* ═══════════════════════════════════════════
    RESPONSIVE
 ═══════════════════════════════════════════ */
 @media (max-width: 500px) {
   .field-row, .ec-form-grid, #add-form .form-grid { grid-template-columns: 1fr; }
   .ec-form-grid .span2, #add-form .span2 { grid-column: 1; }
   .ec-actions { flex-direction: row; }
+}
+@media (max-width: 640px) {
+  .ph-card { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -350,6 +413,7 @@ body {
 
   <nav class="tabs" role="tablist">
     <button class="tab-btn on" data-tab="events"  onclick="switchTab('events')">📅&nbsp;Events</button>
+    <button class="tab-btn"   data-tab="photos"  onclick="switchTab('photos')">📷&nbsp;Photos</button>
     <button class="tab-btn"   data-tab="watch"   onclick="switchTab('watch')">📺&nbsp;Watch</button>
     <button class="tab-btn"   data-tab="contact" onclick="switchTab('contact')">📞&nbsp;Contact</button>
     <button class="tab-btn"   data-tab="giving"  onclick="switchTab('giving')">💝&nbsp;Giving</button>
@@ -413,6 +477,70 @@ body {
       <div class="save-bar" style="max-width:660px;margin:0 auto">
         <span class="save-status" id="events-status"></span>
         <button class="btn btn-primary" id="save-events-btn" onclick="saveEvents()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── PHOTOS (Our Church Family) ─── -->
+  <div class="panel" id="panel-photos">
+    <div class="panel-body">
+      <div class="panel-head"><h2>Our Church Family</h2></div>
+      <p class="hint">The photo section of the website. Add, replace or reorder photos and give each a short caption.
+        Phone photos of any size are fine: they are resized and compressed for the web automatically, and hidden location data is removed.</p>
+
+      <details class="sec-text" id="fam-text">
+        <summary>✏️ Section heading &amp; intro text</summary>
+        <div class="sec-body">
+          <div class="field">
+            <label>Small heading above <span class="label-note">(shown in gold capitals)</span></label>
+            <input type="text" id="f-label" maxlength="60" placeholder="Our Church Family">
+          </div>
+          <div class="field-row" style="margin-top:.55rem">
+            <div class="field">
+              <label>Headline – first part</label>
+              <input type="text" id="f-heading_plain" maxlength="80" placeholder="Do life">
+            </div>
+            <div class="field">
+              <label>Headline – red part</label>
+              <input type="text" id="f-heading_accent" maxlength="80" placeholder="with From the Heart.">
+            </div>
+          </div>
+          <div class="field" style="margin-top:.55rem">
+            <label>Intro sentence</label>
+            <textarea id="f-intro" maxlength="400" rows="2" placeholder="Weekly worship & fellowship and community activities."></textarea>
+          </div>
+          <div class="sec-preview" aria-hidden="true">
+            <div class="lbl" id="fp-label"></div>
+            <div class="hd"><span id="fp-plain"></span> <em id="fp-accent"></em></div>
+            <div class="in" id="fp-intro"></div>
+          </div>
+        </div>
+      </details>
+
+      <div class="ph-toolbar">
+        <span class="ph-count" id="ph-count">Photos</span>
+        <button class="btn btn-primary btn-sm" onclick="document.getElementById('ph-file').click()">+ Add photos</button>
+      </div>
+      <p class="ph-fit" id="ph-fit"></p>
+      <input type="file" id="ph-file" accept="image/*" multiple hidden>
+      <input type="file" id="ph-replace" accept="image/*" hidden>
+      <div id="ph-busy"></div>
+
+      <div class="ph-list" id="ph-list"><div class="loading">Loading photos…</div></div>
+
+      <div class="ph-prev-head">
+        <h3>Preview on the website</h3>
+        <div class="seg" role="group" aria-label="Preview size">
+          <button class="on" id="pv-desk" onclick="setPreview('desk')">💻 Computer</button>
+          <button id="pv-phone" onclick="setPreview('phone')">📱 Phone</button>
+        </div>
+      </div>
+      <div class="ph-preview-wrap"><div class="ph-preview desk" id="ph-preview"></div></div>
+    </div>
+    <div class="save-bar-wrap">
+      <div class="save-bar" style="max-width:660px;margin:0 auto">
+        <span class="save-status" id="photos-status"></span>
+        <button class="btn btn-primary" id="save-photos-btn" onclick="savePhotos()">Save Changes</button>
       </div>
     </div>
   </div>
@@ -544,6 +672,7 @@ const REPO   = 'fromtheheartgr/fth-website';
 const BRANCH = 'main';
 const SAVE_FN = '/api/save';   // Cloudflare Pages Function: functions/api/save.js
 const LOAD_FN = '/api/content?file=';   // Cloudflare Pages Function: functions/api/content.js
+const PHOTOS_FN = '/api/photos';        // Cloudflare Pages Function: functions/api/photos.js
 const MONTHS  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const DAYS_LONG = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
@@ -557,6 +686,15 @@ let contactData  = {};
 let givingData   = {};
 let showPast     = false;
 let eventsChanged = false;
+let galleryData  = { items: [] };   // content/gallery.json  (+ editor-only fields starting with _)
+let familyData   = {};              // content/family.json
+let photosChanged = false;
+let previewMode  = 'desk';
+
+/* Leaving with unsaved work? Ask first. */
+window.addEventListener('beforeunload', e => {
+  if (photosChanged || eventsChanged) { e.preventDefault(); e.returnValue = ''; }
+});
 
 /* ═══════════════════════════════════════════════════════
    BOOT
@@ -643,19 +781,23 @@ async function ghLoad(file) {
 
 async function loadAll() {
   try {
-    [eventsData, watchData, contactData, givingData] = await Promise.all([
+    [eventsData, watchData, contactData, givingData, galleryData, familyData] = await Promise.all([
       ghLoad('content/events.json'),
       ghLoad('content/watch.json'),
       ghLoad('content/contact.json'),
       ghLoad('content/giving.json'),
+      ghLoad('content/gallery.json'),
+      ghLoad('content/family.json'),
     ]);
     renderEvents();
     fillWatch();
     fillContact();
     fillGiving();
+    initPhotos();
   } catch (err) {
-    document.getElementById('event-list').innerHTML =
-      `<div class="loading">⚠️ Could not load content.<br><small>${esc(err.message)}</small></div>`;
+    const msg = `<div class="loading">⚠️ Could not load content.<br><small>${esc(err.message)}</small></div>`;
+    document.getElementById('event-list').innerHTML = msg;
+    document.getElementById('ph-list').innerHTML = msg;
   }
 }
 
@@ -896,6 +1038,355 @@ async function saveGiving() {
 }
 
 /* ═══════════════════════════════════════════════════════
+   PHOTOS – "Our Church Family"
+   New photos are prepared right here in the browser:
+     • turned the right way up (phone rotation info is applied)
+     • resized to fit within 1600 × 1600 (sharp on big screens, light on phones)
+     • compressed to a JPEG under ~450 KB
+     • hidden data stripped (re-encoding drops GPS location etc.)
+   Nothing is cropped away: the person taps the spot that must stay in view (faces),
+   and the website fits the photo around that spot in whatever shape the tile is.
+═══════════════════════════════════════════════════════ */
+const PH_MAX_SIDE  = 1600;
+const PH_MAX_BYTES = 450 * 1024;
+const PH_LIMIT     = 24;
+/* Tile shapes on the live site (measured):
+   computer – photo 1 is a big square; photos 2–5 sit beside it and are square too; photo 6 onwards are 4:3
+   phone    – every tile is 4:3 */
+function tileShapes(i) { return i <= 4 ? [1, 4 / 3] : [4 / 3]; }
+
+function initPhotos() {
+  galleryData = galleryData && Array.isArray(galleryData.items) ? galleryData : { items: [] };
+  galleryData.items.forEach(it => {
+    it._url = '/' + String(it.image || '').replace(/^\/+/, '');
+    if (!it.focus) it.focus = '50% 50%';
+  });
+  ['label', 'heading_plain', 'heading_accent', 'intro'].forEach(k => {
+    const el = document.getElementById('f-' + k);
+    el.value = familyData[k] || '';
+    el.oninput = () => { familyData[k] = el.value; renderSectionPreview(); markUnsaved('photos'); };
+  });
+  renderSectionPreview();
+  renderPhotos();
+}
+
+function renderSectionPreview() {
+  document.getElementById('fp-label').textContent  = familyData.label || '';
+  document.getElementById('fp-plain').textContent  = familyData.heading_plain || '';
+  document.getElementById('fp-accent').textContent = familyData.heading_accent || '';
+  document.getElementById('fp-intro').textContent  = familyData.intro || '';
+}
+
+function parseFocus(f) {
+  const m = /^(\d{1,3})% (\d{1,3})%$/.exec(String(f || ''));
+  return m ? [Math.min(100, +m[1]), Math.min(100, +m[2])] : [50, 50];
+}
+
+/* Which part of the photo a tile shows (same maths as CSS object-fit:cover + object-position) */
+function visibleWindow(imgW, imgH, tileAspect, fx, fy) {
+  const ia = imgW / imgH;
+  let vw = 1, vh = 1;
+  if (ia > tileAspect) vw = tileAspect / ia; else vh = ia / tileAspect;
+  return { x: (1 - vw) * fx / 100, y: (1 - vh) * fy / 100, w: vw, h: vh };
+}
+
+function fitMessage(n) {
+  if (!n) return { cls: 'tip', text: 'No photos yet – the section will show just the big group photo.' };
+  const emptyDesk = (4 - ((n - 1) % 4)) % 4;               // 1 big tile + rows of 4
+  if (emptyDesk === 0) return { cls: 'good', text: `✓ ${n} photo${n > 1 ? 's' : ''} – fills the layout perfectly on computers and phones.` };
+  const up = n + emptyDesk, down = n - (4 - emptyDesk);
+  const opts = [`add ${emptyDesk} more`]; if (down >= 1) opts.push(`remove ${n - down}`);
+  return { cls: 'tip', text: `Tip: with ${n} photos the last row on computers has ${emptyDesk} empty space${emptyDesk > 1 ? 's' : ''}. ${opts.join(' or ').replace(/^./, c => c.toUpperCase())} for a perfect fit (${[down >= 1 ? down : null, up].filter(Boolean).join(' or ')} photos).` };
+}
+
+function renderPhotos() {
+  const items = galleryData.items;
+  const n = items.length;
+  document.getElementById('ph-count').textContent = `${n} photo${n === 1 ? '' : 's'}`;
+  const fit = fitMessage(n);
+  const $fit = document.getElementById('ph-fit');
+  $fit.textContent = fit.text; $fit.className = 'ph-fit ' + fit.cls;
+
+  const $list = document.getElementById('ph-list');
+  if (!n) {
+    $list.innerHTML = '<div class="ph-empty">No photos yet.<br><small>Tap "+ Add photos" to choose some from your phone or computer.</small></div>';
+  } else {
+    $list.innerHTML = items.map((it, i) => {
+      const tags = [];
+      if (i === 0) tags.push('<span class="ph-tag">Big photo · shown first</span>');
+      if (it._blob) tags.push('<span class="ph-tag new">New – not saved yet</span>');
+      if (it._small) tags.push('<span class="ph-tag warn">Small photo – may look soft</span>');
+      return `
+      <div class="ph-card${it._blob ? ' is-new' : ''}" id="ph-${i}">
+        <div class="ph-stage"><div class="ph-box" id="phb-${i}" onclick="setFocus(${i}, event)" title="Tap the spot that must stay in view">
+          <img src="${esc(it._url)}" alt="" onload="photoLoaded(${i}, this)" onerror="photoFallback(${i}, this)">
+          <div class="ph-boxclip"><div class="ph-frame" id="phf-${i}"></div></div>
+          <div class="ph-dot" id="phd-${i}"></div>
+        </div></div>
+        <div class="ph-info">
+          <div class="ph-pos">Photo ${i + 1} of ${n} ${tags.join(' ')}</div>
+          <div class="field">
+            <label>Caption <span class="label-note">(shown on the photo)</span></label>
+            <input type="text" maxlength="80" value="${esc(it.caption || '')}" placeholder="e.g. Church picnic 2026" oninput="editPhoto(${i}, 'caption', this.value)">
+          </div>
+          <div class="field">
+            <label>Describe the photo <span class="label-note">(optional – read aloud for blind visitors)</span></label>
+            <input type="text" maxlength="160" value="${esc(it.alt || '')}" placeholder="e.g. Families sharing food at the picnic tables" oninput="editPhoto(${i}, 'alt', this.value)">
+          </div>
+          <p class="ph-tipline">👆 Tap the photo on the spot that must stay in view (usually faces). Inside the bright box is always visible, on computers and phones.</p>
+          <div class="ph-actions">
+            <button class="btn btn-edit-sm" onclick="movePhoto(${i}, -1)" ${i === 0 ? 'disabled' : ''} aria-label="Move up">↑ Up</button>
+            <button class="btn btn-edit-sm" onclick="movePhoto(${i}, 1)" ${i === n - 1 ? 'disabled' : ''} aria-label="Move down">↓ Down</button>
+            <button class="btn btn-edit-sm" onclick="replacePhoto(${i})">Replace photo</button>
+            <button class="btn btn-danger-sm" onclick="removePhoto(${i})">Remove</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  renderPreview();
+}
+
+/* A photo saved a moment ago isn't on the website until it rebuilds (~1 min):
+   fetch it straight from GitHub instead, so the thumbnail always shows. */
+function photoFallback(i, img) {
+  const it = galleryData.items[i]; if (!it || it._blob) return;
+  if (!it._triedApi && it.image) {
+    it._triedApi = true;
+    it._url = '/api/image?path=' + encodeURIComponent(it.image);
+    img.src = it._url;
+    renderPreview();
+  } else {
+    it._w = 4; it._h = 3;             // unknown size: assume a normal photo so editing still works
+    img.alt = 'Photo not available';
+    photoLoaded(i, { naturalWidth: 4, naturalHeight: 3 });
+  }
+}
+
+/* Size the photo box to the photo's real shape, then draw the frame + focus dot */
+function photoLoaded(i, img) {
+  const it = galleryData.items[i]; if (!it) return;
+  it._w = img.naturalWidth || 4; it._h = img.naturalHeight || 3;
+  const box = document.getElementById('phb-' + i);
+  const maxW = Math.min(288, box.parentElement.clientWidth - 12 || 288), maxH = 230;
+  const k = Math.min(maxW / it._w, maxH / it._h);
+  box.style.width = Math.round(it._w * k) + 'px';
+  box.style.height = Math.round(it._h * k) + 'px';
+  drawFocus(i);
+}
+
+function drawFocus(i) {
+  const it = galleryData.items[i]; if (!it || !it._w) return;
+  const [fx, fy] = parseFocus(it.focus);
+  /* the frame = the part of the photo that is visible in EVERY layout it appears in */
+  const wins = tileShapes(i).map(a => visibleWindow(it._w, it._h, a, fx, fy));
+  const x1 = Math.max(...wins.map(w => w.x)), y1 = Math.max(...wins.map(w => w.y));
+  const x2 = Math.min(...wins.map(w => w.x + w.w)), y2 = Math.min(...wins.map(w => w.y + w.h));
+  const win = { x: x1, y: y1, w: x2 - x1, h: y2 - y1 };
+  const f = document.getElementById('phf-' + i), d = document.getElementById('phd-' + i);
+  if (!f || !d) return;
+  Object.assign(f.style, { left: win.x * 100 + '%', top: win.y * 100 + '%', width: win.w * 100 + '%', height: win.h * 100 + '%' });
+  Object.assign(d.style, { left: fx + '%', top: fy + '%' });
+}
+
+function setFocus(i, ev) {
+  const box = document.getElementById('phb-' + i);
+  const r = box.getBoundingClientRect();
+  const fx = Math.round(Math.max(0, Math.min(1, (ev.clientX - r.left) / r.width)) * 100);
+  const fy = Math.round(Math.max(0, Math.min(1, (ev.clientY - r.top) / r.height)) * 100);
+  galleryData.items[i].focus = `${fx}% ${fy}%`;
+  drawFocus(i); renderPreview(); markUnsaved('photos');
+}
+
+function editPhoto(i, key, val) {
+  galleryData.items[i][key] = val;
+  renderPreview(); markUnsaved('photos');
+}
+
+function movePhoto(i, dir) {
+  const j = i + dir, a = galleryData.items;
+  if (j < 0 || j >= a.length) return;
+  [a[i], a[j]] = [a[j], a[i]];
+  renderPhotos(); markUnsaved('photos');
+  const card = document.getElementById('ph-' + j); if (card) card.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+
+function removePhoto(i) {
+  const it = galleryData.items[i];
+  if (!confirm(`Remove this photo${it.caption ? ` ("${it.caption}")` : ''} from the website?`)) return;
+  galleryData.items.splice(i, 1);
+  renderPhotos(); markUnsaved('photos');
+}
+
+let replaceIndex = -1;
+function replacePhoto(i) { replaceIndex = i; document.getElementById('ph-replace').click(); }
+
+function setPreview(mode) {
+  previewMode = mode;
+  document.getElementById('pv-desk').classList.toggle('on', mode === 'desk');
+  document.getElementById('pv-phone').classList.toggle('on', mode === 'phone');
+  renderPreview();
+}
+
+function renderPreview() {
+  const items = galleryData.items, el = document.getElementById('ph-preview');
+  el.className = 'ph-preview ' + previewMode;
+  let html = items.map(it => {
+    const [fx, fy] = parseFocus(it.focus);
+    return `<figure><img src="${esc(it._url)}" alt="" style="object-position:${fx}% ${fy}%">${it.caption ? `<figcaption>${esc(it.caption)}</figcaption>` : ''}</figure>`;
+  }).join('');
+  if (items.length) {
+    const empty = previewMode === 'desk' ? (4 - ((items.length - 1) % 4)) % 4 : (items.length - 1) % 2;
+    html += '<div class="gap"></div>'.repeat(empty);
+  }
+  el.innerHTML = html;
+}
+
+/* ── Preparing a new photo ─────────────────────────────────────────────────── */
+function loadImage(file) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => resolve({ img, url });
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('unreadable')); };
+    img.src = url;   // browsers apply the phone's rotation info to <img> automatically
+  });
+}
+function canvasToBlob(c, q) { return new Promise(r => c.toBlob(r, 'image/jpeg', q)); }
+
+async function preparePhoto(file) {
+  if (file.type && !file.type.startsWith('image/')) throw new Error(`"${file.name}" is not a photo.`);
+  let loaded;
+  try { loaded = await loadImage(file); }
+  catch {
+    const heic = /\.(heic|heif)$/i.test(file.name) || /hei[cf]/i.test(file.type);
+    throw new Error(heic
+      ? `"${file.name}" is an iPhone HEIC photo this browser can't open. On the iPhone, choose the photo from the Photos app on the phone itself, or set Settings → Camera → Formats → "Most Compatible".`
+      : `"${file.name}" couldn't be opened. Please choose a JPG or PNG photo.`);
+  }
+  const { img, url } = loaded;
+  const W0 = img.naturalWidth, H0 = img.naturalHeight;
+  URL.revokeObjectURL(url);
+  if (!W0 || !H0) throw new Error(`"${file.name}" couldn't be read.`);
+  const k = Math.min(1, PH_MAX_SIDE / Math.max(W0, H0));
+  const W = Math.round(W0 * k), H = Math.round(H0 * k);
+
+  /* shrink in halving steps – keeps fine detail crisp when a 24 MP photo becomes 1600 px */
+  let src = img, sw = W0, sh = H0;
+  while (sw / 2 >= W * 1.5) {
+    const c = document.createElement('canvas');
+    c.width = Math.round(sw / 2); c.height = Math.round(sh / 2);
+    const x = c.getContext('2d'); x.imageSmoothingQuality = 'high';
+    x.drawImage(src, 0, 0, c.width, c.height);
+    src = c; sw = c.width; sh = c.height;
+  }
+  const out = document.createElement('canvas');
+  out.width = W; out.height = H;
+  const ctx = out.getContext('2d');
+  ctx.fillStyle = '#F7F2E7';           // transparent PNGs get the site's cream behind them
+  ctx.fillRect(0, 0, W, H);
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(src, 0, 0, W, H);
+
+  let q = 0.86, blob = await canvasToBlob(out, q);
+  while (blob && blob.size > PH_MAX_BYTES && q > 0.55) { q -= 0.06; blob = await canvasToBlob(out, q); }
+  if (!blob) throw new Error(`"${file.name}" couldn't be converted.`);
+
+  const d = new Date(), rnd = Array.from(crypto.getRandomValues(new Uint8Array(4)), b => b.toString(16).padStart(2, '0')).join('');
+  const name = `family-${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}-${rnd}.jpg`;
+  return {
+    _blob: blob, _name: name, _url: URL.createObjectURL(blob), _w: W, _h: H,
+    _small: Math.min(W0, H0) < 700,
+    focus: H > W ? '50% 35%' : '50% 50%',    // portraits: faces are usually in the upper third
+    _stats: { from: `${W0}×${H0}, ${(file.size / 1048576).toFixed(1)} MB`, to: `${W}×${H}, ${Math.round(blob.size / 1024)} KB` },
+  };
+}
+
+function setBusy(msg) {
+  document.getElementById('ph-busy').innerHTML = msg ? `<div class="ph-busy"><span class="spin"></span>${esc(msg)}</div>` : '';
+}
+
+async function handleFiles(files, replaceAt) {
+  files = Array.from(files || []);
+  if (!files.length) return;
+  const room = PH_LIMIT - galleryData.items.length + (replaceAt >= 0 ? 1 : 0);
+  if (files.length > room) { alert(`The section can show at most ${PH_LIMIT} photos. Only the first ${Math.max(0, room)} will be added.`); files = files.slice(0, Math.max(0, room)); }
+  const errors = []; let done = 0, lastStats = null;
+  for (const f of files) {
+    setBusy(`Preparing photo ${++done} of ${files.length}…`);
+    try {
+      const p = await preparePhoto(f);
+      lastStats = p._stats;
+      const caption = f.name.replace(/\.[^.]+$/, '').replace(/^(IMG|DSC|PXL|DCIM)[-_ ]?\d+.*$/i, '').replace(/[-_]+/g, ' ').trim();
+      if (replaceAt >= 0) {
+        const old = galleryData.items[replaceAt];
+        galleryData.items[replaceAt] = { ...p, caption: old.caption || '', alt: old.alt || '' };
+      } else {
+        galleryData.items.push({ ...p, caption, alt: '' });
+      }
+    } catch (e) { errors.push(e.message); }
+  }
+  setBusy('');
+  renderPhotos(); markUnsaved('photos');
+  if (errors.length) alert(errors.join('\n\n'));
+  else if (lastStats) showToast(`Photo ready: ${lastStats.from} → ${lastStats.to}`, 'ok');
+  const target = replaceAt >= 0 ? replaceAt : galleryData.items.length - 1;
+  const card = document.getElementById('ph-' + target); if (card) card.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+document.getElementById('ph-file').addEventListener('change', function () { handleFiles(this.files, -1); this.value = ''; });
+document.getElementById('ph-replace').addEventListener('change', function () { handleFiles(this.files, replaceIndex); this.value = ''; replaceIndex = -1; });
+
+function blobToBase64(blob) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(String(r.result).split(',')[1]);
+    r.onerror = () => rej(new Error('read failed'));
+    r.readAsDataURL(blob);
+  });
+}
+
+async function savePhotos() {
+  const btn = document.getElementById('save-photos-btn');
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span>&nbsp;Saving…';
+  try {
+    const uploads = [];
+    const items = [];
+    for (const it of galleryData.items) {
+      if (it._blob) uploads.push({ name: it._name, data: await blobToBase64(it._blob) });
+      items.push({
+        image: it._blob ? 'assets/gallery/' + it._name : it.image,
+        caption: (it.caption || '').trim(),
+        alt: (it.alt || '').trim(),
+        focus: it.focus || '50% 50%',
+      });
+    }
+    const family = {};
+    ['label', 'heading_plain', 'heading_accent', 'intro'].forEach(k => family[k] = (familyData[k] || '').trim());
+
+    const res = await fetch(PHOTOS_FN, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password, gallery: { items }, family, uploads }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.ok) {
+      galleryData.items.forEach((it, i) => { if (it._blob) { it.image = items[i].image; delete it._blob; delete it._name; } });
+      photosChanged = false; setStatus('photos', '');
+      renderPhotos();
+      showToast(`✓ Saved! The website will update in about 1 minute.`, 'ok');
+    } else if (res.status === 401) {
+      showToast('Session expired. Please sign in again.', 'err');
+      doLogout();
+    } else {
+      showToast('Save failed: ' + (data.error || `Error ${res.status}`), 'err');
+    }
+  } catch (e) {
+    showToast('Could not connect. Check your internet connection.', 'err');
+  }
+  btn.disabled = false; btn.textContent = 'Save Changes';
+}
+
+/* ═══════════════════════════════════════════════════════
    SAVE API
 ═══════════════════════════════════════════════════════ */
 async function saveFile(file, content, btnId, section) {
@@ -937,6 +1428,10 @@ function markUnsaved(section) {
   if (section === 'events') {
     eventsChanged = true;
     setStatus('events', '● Unsaved changes — click Save Changes when done');
+  }
+  if (section === 'photos') {
+    photosChanged = true;
+    setStatus('photos', '● Unsaved changes — click Save Changes when done');
   }
 }
 
